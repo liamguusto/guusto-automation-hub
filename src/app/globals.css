@@ -1,11 +1,11 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* Guusto brand tokens */
-  --color-coral:       #E85D26;
-  --color-coral-light: #FEF0EA;
-  --color-coral-dark:  #C4491A;
-  --color-coral-muted: #F4987A;
+  /* Guusto brand tokens — teal from guusto.com */
+  --color-coral:       #53C2BE;
+  --color-coral-light: #EAF8F7;
+  --color-coral-dark:  #229E9A;
+  --color-coral-muted: #8BD9D6;
 
   /* Warm neutrals */
   --color-warm-50:  #FAFAF9;

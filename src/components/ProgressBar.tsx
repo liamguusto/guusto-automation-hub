@@ -30,7 +30,7 @@ export function ProgressBar({ progress, milestone, size = 'md' }: ProgressBarPro
           className={`${h} rounded-full progress-bar-fill`}
           style={{
             width: 0,
-            background: 'linear-gradient(90deg, #E85D26, #F07D4A)',
+            background: 'linear-gradient(90deg, #53C2BE, #6DCFCC)',
           }}
         />
       </div>

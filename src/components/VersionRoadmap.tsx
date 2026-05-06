@@ -2,7 +2,7 @@ import type { VersionPhase } from '@/data/projects'
 
 const phaseStyle: Record<VersionPhase['status'], { ring: string; dot: string; bg: string; text: string }> = {
   done:    { ring: 'ring-emerald-300', dot: 'bg-emerald-500', bg: 'bg-emerald-50',  text: 'text-emerald-700' },
-  current: { ring: 'ring-coral',       dot: 'bg-coral',       bg: 'bg-coral-light', text: 'text-coral-dark'  },
+  current: { ring: 'ring-[#53C2BE]', dot: 'bg-[#53C2BE]', bg: 'bg-[#EAF8F7]', text: 'text-[#229E9A]' },
   planned: { ring: 'ring-warm-200',    dot: 'bg-warm-200',    bg: 'bg-warm-50',     text: 'text-gray-400'    },
 }
 
@@ -19,7 +19,7 @@ export function VersionRoadmap({ phases }: { phases: VersionPhase[] }) {
               className={`rounded-xl p-4 ring-1 ${s.ring} ${s.bg} relative`}
             >
               {phase.status === 'current' && (
-                <span className="absolute top-3 right-3 text-[10px] font-semibold uppercase tracking-wider text-coral bg-coral-light px-1.5 py-0.5 rounded-full ring-1 ring-coral/20">
+                <span className="absolute top-3 right-3 text-[10px] font-semibold uppercase tracking-wider text-[#229E9A] bg-[#EAF8F7] px-1.5 py-0.5 rounded-full ring-1 ring-[#53C2BE]/20">
                   Now
                 </span>
               )}

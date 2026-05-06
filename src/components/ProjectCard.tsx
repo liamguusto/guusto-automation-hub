@@ -14,7 +14,7 @@ export function ProjectCard({ project }: { project: Project }) {
       <div className="card-lift h-full bg-white rounded-2xl border border-warm-200 p-5 flex flex-col gap-4 shadow-sm">
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
-          <h2 className="font-semibold text-warm-900 text-sm leading-snug group-hover:text-coral transition-colors">
+          <h2 className="font-semibold text-warm-900 text-sm leading-snug group-hover:text-[#53C2BE] transition-colors">
             {project.shortTitle}
           </h2>
           <StatusBadge status={project.status} />
@@ -46,7 +46,7 @@ export function ProjectCard({ project }: { project: Project }) {
           <div className="flex-1 min-w-0">
             <TechStack tech={project.tech.slice(0, 4)} />
           </div>
-          <span className="text-xs font-semibold text-coral group-hover:underline flex-shrink-0">
+          <span className="text-xs font-semibold text-[#53C2BE] group-hover:underline flex-shrink-0">
             View →
           </span>
         </div>

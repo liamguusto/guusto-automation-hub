@@ -30,7 +30,6 @@ export type Project = {
   currentMilestone: string
   lastUpdated: string
   tech: string[]
-  notionUrl: string
   diagram?: string
   actionItems: ActionItem[]
   roadmap: VersionPhase[]
@@ -145,7 +144,6 @@ export const projects: Project[] = [
     currentMilestone: 'V1 spec doc + HubSpot↔Metabase account mapping (Camille/Cam)',
     lastUpdated: '2026-05-06',
     tech: ['HubSpot', 'Railway', 'Claude API', 'Python', 'Slack', 'Google Sheets'],
-    notionUrl: 'https://www.notion.so/3528c24d9e8980c3b078ffe09decb584',
     diagram: DIAGRAM_AUTO_RENEWAL,
     roadblocks: [
       {
@@ -236,7 +234,6 @@ export const projects: Project[] = [
     currentMilestone: 'Pipeline built — HubSpot import + sequence enrollment pending',
     lastUpdated: '2026-04-27',
     tech: ['Metabase', 'Python', 'Claude API', 'HubSpot'],
-    notionUrl: 'https://www.notion.so/34b8c24d9e89803d9491e2ced920c8f6',
     diagram: DIAGRAM_FREE_TIER,
     actionItems: [
       { text: 'Build 3 HubSpot custom contact properties (guusto_email_body_1/2/3 + supporting)', done: true, owner: 'Liam' },
@@ -293,7 +290,6 @@ export const projects: Project[] = [
     currentMilestone: 'Requirements defined — spec not yet started',
     lastUpdated: '2026-04-22',
     tech: ['Fathom', 'Firecrawl', 'Claude API', 'HubSpot', 'Python', 'Railway'],
-    notionUrl: 'https://www.notion.so/3498c24d9e89801bb676d62757c73698',
     diagram: DIAGRAM_PRE_DEMO,
     actionItems: [
       { text: 'Write spec doc — define triggers, data sources, output format', done: false, owner: 'Liam' },
@@ -350,7 +346,6 @@ export const projects: Project[] = [
     currentMilestone: 'Decide lead play (Axonify-first vs. parallel) → write sequence copy',
     lastUpdated: '2026-05-06',
     tech: ['TheirStack', 'Explorium', 'Bombora', 'Clay', 'HubSpot', 'Claude API'],
-    notionUrl: 'https://www.notion.so/3588c24d9e89811490fac6f7972d500a',
     diagram: DIAGRAM_INTEGRATION,
     actionItems: [
       { text: 'Confirm Axonify integration is live and functional for all customers', done: false, owner: 'Liam' },
