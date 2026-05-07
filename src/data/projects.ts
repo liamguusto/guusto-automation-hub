@@ -118,15 +118,15 @@ const DIAGRAM_INTEGRATION = `flowchart TD
     TS["TheirStack<br/>97 Axonify companies<br/>deliberate install-base signal"]:::source --> ENRICH
     EXP["Explorium + Bombora<br/>880 UKG Pro companies<br/>recognition/rewards intent filter"]:::source --> ENRICH
     ENRICH["Clay<br/>Contact enrichment<br/>+ firmographics"]:::tool --> CLAUDE
-    CLAUDE["Claude API<br/>Personalised opening line<br/>per company"]:::ai --> HS
-    HS["HubSpot<br/>Contact import<br/>+ sequence enrollment"]:::hubspot --> SEQ
-    SEQ["Email Sequences<br/>Axonify: integration hook<br/>UKG Pro: intent-driven pitch"]:::output
+    CLAUDE["Claude API<br/>Personalised opening line<br/>per company"]:::ai --> INST
+    INST["Instantly<br/>Cold email delivery<br/>secondary domain + inbox warming"]:::send --> HS
+    HS["HubSpot<br/>Engaged contacts sync back<br/>→ warm follow-up sequences"]:::hubspot
 
     classDef source fill:#FED7AA,stroke:#C2410C,color:#7C2D12
     classDef tool fill:#EDE9FE,stroke:#6D28D9,color:#3B0764
     classDef ai fill:#FEF3C7,stroke:#D97706,color:#78350F
-    classDef hubspot fill:#DBEAFE,stroke:#1D4ED8,color:#1E3A5F
-    classDef output fill:#D1FAE5,stroke:#059669,color:#064E3B`
+    classDef send fill:#D1FAE5,stroke:#059669,color:#064E3B
+    classDef hubspot fill:#DBEAFE,stroke:#1D4ED8,color:#1E3A5F`
 
 // ─────────────────────────────────────────────────────
 // PROJECTS
@@ -343,11 +343,25 @@ export const projects: Project[] = [
       'Outbound campaign targeting companies already using Guusto\'s integration partners. Play 1: 97 Axonify companies (TheirStack) — deliberate, clean signal. Play 2: 880 UKG Pro companies with active recognition/rewards Bombora intent (Explorium). Messaging centres on the native integration: "Your managers can send recognition without leaving the tool they already use."',
     status: 'research-complete',
     progress: 40,
-    currentMilestone: 'Decide lead play (Axonify-first vs. parallel) → write sequence copy',
-    lastUpdated: '2026-05-06',
-    tech: ['TheirStack', 'Explorium', 'Bombora', 'Clay', 'HubSpot', 'Claude API'],
+    currentMilestone: 'Resolve cold email tooling decision → write sequence copy',
+    lastUpdated: '2026-05-07',
+    tech: ['TheirStack', 'Explorium', 'Bombora', 'Clay', 'Instantly', 'HubSpot', 'Claude API'],
     diagram: DIAGRAM_INTEGRATION,
+    roadblocks: [
+      {
+        title: 'HubSpot is not the right delivery layer for cold email',
+        impact: 'Sending 1,000–3,000 net-new cold contacts through a primary @guusto.com inbox risks domain reputation damage for the whole team. HubSpot has no inbox warming, no email rotation, and no deliverability tooling — it is built for warm outreach, not cold lists.',
+        owner: 'Liam + Konrad — team decision required',
+        workaround: 'Use Instantly (dedicated cold email tool) with a secondary domain (e.g. higuusto.com). HubSpot handles warm follow-up after first reply, with activity synced back via integration.',
+      },
+      {
+        title: 'Cold email tooling not yet confirmed',
+        impact: 'Blocks sequence build, domain setup, and copy finalisation. Need to confirm whether Guusto already has a cold email tool in the stack before purchasing Instantly.',
+        owner: 'Liam + Konrad',
+      },
+    ],
     actionItems: [
+      { text: 'Confirm if Guusto already has a cold email sequencing tool (Outreach, Salesloft, Apollo, Smartlead, Instantly)', done: false, owner: 'Liam + Konrad' },
       { text: 'Confirm Axonify integration is live and functional for all customers', done: false, owner: 'Liam' },
       { text: 'Pull Axonify list from TheirStack (97 cos) — review ICP fit', done: false, owner: 'Liam' },
       { text: 'Pull sample from Explorium intent list (25–50 cos) — validate quality', done: false, owner: 'Liam' },
@@ -367,7 +381,7 @@ export const projects: Project[] = [
           'Pull 97 Axonify companies from TheirStack',
           'Contact enrichment via Clay',
           'Claude API: personalised opening line per company',
-          'HubSpot sequence: Axonify integration hook',
+          'Instantly: cold email send from secondary domain',
         ],
       },
       {
@@ -377,7 +391,7 @@ export const projects: Project[] = [
         features: [
           '880 UKG Pro + Bombora intent companies from Explorium',
           'Same Clay + Claude API pipeline',
-          'HubSpot sequence: UKG Pro intent-driven pitch',
+          'Instantly: cold email send from secondary domain',
           'Do not reference UKG Talk unless confirmed active',
         ],
       },
