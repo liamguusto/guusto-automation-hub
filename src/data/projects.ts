@@ -29,6 +29,8 @@ export type Project = {
   progress: number
   currentMilestone: string
   lastUpdated: string
+  owner?: string
+  highlights?: string[]
   tech: string[]
   diagram?: string
   actionItems: ActionItem[]
@@ -63,37 +65,44 @@ const DIAGRAM_AUTO_RENEWAL = `flowchart TD
     classDef done fill:#D1FAE5,stroke:#059669,color:#064E3B`
 
 const DIAGRAM_FREE_TIER = `flowchart TD
-    subgraph SETUP["⚙️ Phase 0 — One-Time Setup (HubSpot UI)"]
-        S1["Create custom contact properties<br/>guusto_email_body_1 / _2 / _3<br/>+ guusto_funded_12mo, unclaimed_value, segment_tier"]:::setup
-        S2["Build 3 sequence shells<br/>High Value · Mid Value · Low Value<br/>Email body = contact.guusto_email_body_N"]:::setup
-    end
+    A(["📊 Metabase Export<br/>1,131 free-tier accounts<br/>actively funding Guusto"]):::source --> B
 
-    A(["📊 Metabase SQL Export<br/>~1,100+ rows — CSV"]):::start --> B
+    B["Tier Segmentation<br/>Split by 12-month funding<br/>and unclaimed balance"]:::step --> C & D & E & F
 
-    subgraph SCRIPT["🐍 Python Script — runs locally, one time"]
-        B["Claude API<br/>1 call per contact<br/>Inputs: name, funding, unclaimed value,<br/>team size, account age, currency<br/>Output: 3 email body variants as JSON<br/>~$10–15 total · ~10 min"]:::ai
-        B --> C["Write back to CSV<br/>Appends guusto_email_body_1 / _2 / _3"]:::step
-    end
+    C["Tier A — 156 contacts<br/>High Value · \\$500+ unclaimed<br/>3-email sequence"]:::tierA
+    D["Tier B — 277 contacts<br/>High Value · low unclaimed<br/>3-email sequence"]:::tierB
+    E["Tier C — 442 contacts<br/>Mid Value<br/>2-email sequence"]:::tierC
+    F["Tier D — 256 contacts<br/>Low Value<br/>Skipped"]:::skip
 
-    C --> E(["📄 Final CSV<br/>Ready for HubSpot import"]):::output
+    C & D & E --> G
 
-    subgraph MANUAL["👤 Manual Steps — Liam"]
-        F["Import CSV into HubSpot<br/>Maps columns to contact properties"]:::manual
-        F --> G["Filter contacts by guusto_segment_tier<br/>High / Mid / Low Value"]:::manual
-        G --> H["Bulk enrol into sequences<br/>High Value → Seq A<br/>Mid Value → Seq B · Low Value → Seq C"]:::manual
-    end
+    G["HubSpot Contact Lookup<br/>Match by email address<br/>Company domain as fallback"]:::step --> H
 
-    E --> F
+    H["Claude API — Sonnet<br/>Reads each account's data<br/>Selects best angles per tier<br/>Writes 3 personalised emails as JSON<br/>~\\$18 total for all 875 contacts"]:::ai --> I
 
-    H --> I["📧 Sequences send from Liam's inbox<br/>Email 1 (Day 0) · Email 2 (Day 3) · Email 3 (Day 7)<br/>Auto-unenrol on reply or meeting booked"]:::send
+    I["Write directly to HubSpot<br/>ft_upsell_email_body_1 / 2 / 3<br/>ft_upsell_email_subject_1 / 2 / 3<br/>ft_upsell_tier"]:::hubspot
 
-    classDef start fill:#FED7AA,stroke:#C2410C,color:#7C2D12
-    classDef setup fill:#EDE9FE,stroke:#6D28D9,color:#3B0764
+    I --> J & K
+
+    J["⏳ Konrad's details<br/>Last name + Calendly link<br/>Add to pipeline config"]:::pending
+    K["⏳ Sequence shells<br/>Build 2 sequences in HubSpot UI<br/>Tier A/B (3 emails · Day 0/3/7)<br/>Tier C (2 emails · Day 0/5)"]:::pending
+
+    J & K --> L
+
+    L["Bulk Enrol<br/>Filter contacts by ft_upsell_tier<br/>in HubSpot contact list view"]:::step --> M
+
+    M(["📧 Sequences send from Konrad's inbox<br/>Calendly CTA in every email<br/>Auto-unenrol on reply or meeting booked"]):::send
+
+    classDef source fill:#FED7AA,stroke:#C2410C,color:#7C2D12
     classDef step fill:#DBEAFE,stroke:#1E40AF,color:#1E3A5F
-    classDef ai fill:#DDD6FE,stroke:#6D28D9,color:#3B0764
-    classDef output fill:#A7F3D0,stroke:#047857,color:#064E3B
-    classDef manual fill:#FEF3C7,stroke:#B45309,color:#78350F
-    classDef send fill:#A7F3D0,stroke:#047857,color:#064E3B`
+    classDef tierA fill:#DDD6FE,stroke:#6D28D9,color:#3B0764
+    classDef tierB fill:#EDE9FE,stroke:#7C3AED,color:#4C1D95
+    classDef tierC fill:#E0E7FF,stroke:#4338CA,color:#1E1B4B
+    classDef skip fill:#F3F4F6,stroke:#9CA3AF,color:#6B7280
+    classDef ai fill:#FEF3C7,stroke:#D97706,color:#78350F
+    classDef hubspot fill:#DBEAFE,stroke:#1D4ED8,color:#1E3A5F
+    classDef pending fill:#FEF9C3,stroke:#CA8A04,color:#713F12
+    classDef send fill:#D1FAE5,stroke:#059669,color:#064E3B`
 
 const DIAGRAM_PRE_DEMO = `flowchart TD
     CALL["Fathom<br/>Are We A Fit call ends"]:::trigger --> TRANS
@@ -143,6 +152,8 @@ export const projects: Project[] = [
     progress: 25,
     currentMilestone: 'V1 spec doc + HubSpot↔Metabase account mapping (Camille/Cam)',
     lastUpdated: '2026-05-06',
+    owner: 'Liam Shandro',
+    highlights: ['Light plan accounts', '30-day trigger window', 'Konrad reviews drafts'],
     tech: ['HubSpot', 'Railway', 'Claude API', 'Python', 'Slack', 'Google Sheets'],
     diagram: DIAGRAM_AUTO_RENEWAL,
     roadblocks: [
@@ -228,42 +239,51 @@ export const projects: Project[] = [
     title: 'Free Tier Upsell: No Subscription + Funding Activity',
     shortTitle: 'Free Tier Upsell',
     description:
-      'Automated upsell pipeline targeting free-tier accounts with meaningful funding activity. Python script pulls a Metabase CSV export, passes each contact to Claude API to generate 3 personalised email body variants, writes them back to CSV, then Liam bulk-imports to HubSpot and enrolls in one of three sequences by segment tier (High / Mid / Low Value).',
+      'Personalised upsell campaign targeting 875 free-tier Guusto accounts that are actively funding recognition. A Python pipeline analyses each account\'s usage data, segments contacts into three tiers based on funding activity and unclaimed gift balance, then generates unique personalised emails via Claude API and writes them directly to HubSpot — no manual import required. Two items remain before launch: Konrad\'s sender details (last name + Calendly link) and building the HubSpot sequence shells. Once done, the full run is three commands.',
     status: 'in-progress',
-    progress: 65,
-    currentMilestone: 'Pipeline built — HubSpot import + sequence enrollment pending',
-    lastUpdated: '2026-04-27',
-    tech: ['Metabase', 'Python', 'Claude API', 'HubSpot'],
+    progress: 90,
+    currentMilestone: 'Pipeline complete — waiting on Konrad\'s details + HubSpot sequence shells',
+    lastUpdated: '2026-05-07',
+    owner: 'Liam Shandro',
+    highlights: ['875 contacts', '3 sequence tiers', '~$18 API cost'],
+    tech: ['Metabase', 'Python', 'Claude API (Sonnet)', 'HubSpot', 'HubSpot Sequences'],
     diagram: DIAGRAM_FREE_TIER,
     actionItems: [
-      { text: 'Build 3 HubSpot custom contact properties (guusto_email_body_1/2/3 + supporting)', done: true, owner: 'Liam' },
-      { text: 'Build 3 sequence shells in HubSpot (High / Mid / Low Value)', done: true, owner: 'Liam' },
-      { text: 'Pull Metabase SQL export (~1,100 contacts)', done: true, owner: 'Liam' },
-      { text: 'Run Python + Claude API script to generate email bodies', done: true, owner: 'Liam' },
-      { text: 'Import final CSV into HubSpot', done: false, owner: 'Liam' },
-      { text: 'Filter contacts by guusto_segment_tier in HubSpot', done: false, owner: 'Liam' },
-      { text: 'Bulk enroll into sequences A / B / C', done: false, owner: 'Liam' },
+      { text: 'Pull Metabase SQL export (1,131 free-tier contacts)', done: true, owner: 'Liam' },
+      { text: 'Analyse segment data — build 4-tier model by funding + unclaimed balance', done: true, owner: 'Liam' },
+      { text: 'Split CSV into tier files (A: 156 · B: 277 · C: 442 · D: 256 skipped)', done: true, owner: 'Liam' },
+      { text: 'Create 7 HubSpot custom contact properties (ft_upsell_*)', done: true, owner: 'Liam' },
+      { text: 'Build pipeline — HubSpot contact lookup + Claude API + direct property write', done: true, owner: 'Liam' },
+      { text: 'Build email copy ruleset (anti-AI-tell rules, saved as reusable workspace skill)', done: true, owner: 'Liam' },
+      { text: 'Read internal pricing sheet + Guusto.com/pricing — encode accurate feature gaps into prompts', done: true, owner: 'Liam' },
+      { text: 'Test end-to-end — email generation + HubSpot write verified on live contact', done: true, owner: 'Liam' },
+      { text: 'Add Konrad\'s last name + Calendly link to pipeline config (prompts.py)', done: false, owner: 'Konrad' },
+      { text: 'Build 2 HubSpot sequence shells (Tier A/B — 3 emails · Tier C — 2 emails) from Konrad\'s inbox', done: false, owner: 'Liam + Konrad' },
+      { text: 'Run full pipeline (python3 pipeline.py --tier a/b/c)', done: false, owner: 'Liam' },
+      { text: 'Bulk enroll contacts by ft_upsell_tier in HubSpot contact list view', done: false, owner: 'Liam' },
     ],
     roadmap: [
       {
         label: 'V1',
         status: 'current',
-        description: 'Manual CSV pipeline — one-time run',
+        description: 'One-time run — direct HubSpot API pipeline',
         features: [
-          'Metabase SQL export → local CSV',
-          'Python + Claude API: 1 call/contact, 3 email variants',
-          'Manual HubSpot import + sequence enrollment',
-          '~$10–15 API cost · ~10 min to run',
+          'Metabase CSV → 4-tier segmentation (875 contacts sequenced)',
+          'Python + Claude Sonnet: 1 API call per contact, 3 personalised emails',
+          'HubSpot contact lookup by email (domain fallback for non-matches)',
+          'Writes directly to HubSpot — no CSV import step',
+          'Email-copy ruleset skill: anti-AI-tell rules, upsell tone, feature gap framing',
+          '~$18 total API cost for full run',
         ],
       },
       {
         label: 'V2',
         status: 'planned',
-        description: 'Automated HubSpot API push',
+        description: 'Scheduled re-runs for new free-tier accounts',
         features: [
-          'Replace manual CSV import with HubSpot API write',
-          'Auto-enroll via HubSpot workflow trigger',
-          'Scheduled re-runs (weekly/monthly) for new contacts',
+          'Monthly cron job on Railway — catches new accounts that clear the threshold',
+          'Skip contacts already enrolled or previously sequenced',
+          'Auto-enroll via HubSpot workflow trigger on ft_upsell_tier being set',
         ],
       },
       {
@@ -271,9 +291,9 @@ export const projects: Project[] = [
         status: 'planned',
         description: 'Real-time trigger on activity threshold',
         features: [
-          'Trigger enrollment on funding activity event',
-          'Dynamic angle selection based on latest data',
-          'Unclaimed value monitoring + expiry alerts',
+          'Trigger on funding activity event (webhook or Metabase alert)',
+          'Dynamic angle re-selection based on latest account data',
+          'Unclaimed balance monitoring — re-surface to sales if balance crosses threshold',
         ],
       },
     ],
@@ -289,6 +309,8 @@ export const projects: Project[] = [
     progress: 10,
     currentMilestone: 'Requirements defined — spec not yet started',
     lastUpdated: '2026-04-22',
+    owner: 'Liam Shandro',
+    highlights: ['Fathom webhook trigger', 'AI brief + follow-up', 'HubSpot deal sync'],
     tech: ['Fathom', 'Firecrawl', 'Claude API', 'HubSpot', 'Python', 'Railway'],
     diagram: DIAGRAM_PRE_DEMO,
     actionItems: [
@@ -345,6 +367,8 @@ export const projects: Project[] = [
     progress: 40,
     currentMilestone: 'Resolve cold email tooling decision → write sequence copy',
     lastUpdated: '2026-05-07',
+    owner: 'Liam Shandro',
+    highlights: ['97 Axonify accounts', '880 UKG Pro accounts', 'Bombora intent-filtered'],
     tech: ['TheirStack', 'Explorium', 'Bombora', 'Clay', 'Instantly', 'HubSpot', 'Claude API'],
     diagram: DIAGRAM_INTEGRATION,
     roadblocks: [
