@@ -9,6 +9,7 @@ import { ActionItemList } from '@/components/ActionItemList'
 import { VersionRoadmap } from '@/components/VersionRoadmap'
 import { Header } from '@/components/Header'
 import { DiagramWrapper } from '@/components/DiagramWrapper'
+import { FreeTierSequenceBreakdown } from '@/components/FreeTierSequenceBreakdown'
 
 export function generateStaticParams() {
   return projects.map((p) => ({ slug: p.slug }))
@@ -164,6 +165,9 @@ export default async function ProjectPage({
                 </div>
               </div>
             )}
+
+            {/* Project-specific custom sections */}
+            {project.slug === 'free-tier-upsell' && <FreeTierSequenceBreakdown />}
 
             {/* Action items */}
             <div className="bg-white rounded-2xl border border-warm-200 p-5">

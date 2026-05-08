@@ -67,31 +67,31 @@ const DIAGRAM_AUTO_RENEWAL = `flowchart TD
 const DIAGRAM_FREE_TIER = `flowchart TD
     A(["📊 Metabase Export<br/>1,131 free-tier accounts<br/>actively funding Guusto"]):::source --> B
 
-    B["Tier Segmentation<br/>Split by 12-month funding<br/>and unclaimed balance"]:::step --> C & D & E & F
+    B["Tier Segmentation<br/>Primary: unclaimed ≥ \\$500 → Tier A<br/>Then split by 12-month funding"]:::step --> C & D & E & F
 
-    C["Tier A — 156 contacts<br/>High Value · \\$500+ unclaimed<br/>3-email sequence"]:::tierA
-    D["Tier B — 277 contacts<br/>High Value · low unclaimed<br/>3-email sequence"]:::tierB
-    E["Tier C — 442 contacts<br/>Mid Value<br/>2-email sequence"]:::tierC
-    F["Tier D — 256 contacts<br/>Low Value<br/>Skipped"]:::skip
+    C["Tier A — 192 contacts<br/>Unclaimed ≥ \\$500 (any funding)<br/>3-email sequence"]:::tierA
+    D["Tier B — 277 contacts<br/>Funded \\$1,000+/yr · unclaimed &lt; \\$500<br/>3-email sequence"]:::tierB
+    E["Tier C — 410 contacts<br/>Funded \\$200–\\$999/yr · unclaimed &lt; \\$500<br/>3-email sequence"]:::tierC
+    F["Tier D — 252 contacts<br/>Funded &lt; \\$200/yr<br/>Skipped"]:::skip
 
     C & D & E --> G
 
     G["HubSpot Contact Lookup<br/>Match by email address<br/>Company domain as fallback"]:::step --> H
 
-    H["Claude API — Sonnet<br/>Reads each account's data<br/>Selects best angles per tier<br/>Writes 3 personalised emails as JSON<br/>~\\$18 total for all 875 contacts"]:::ai --> I
+    H["Claude API — Sonnet<br/>Reads each account's data<br/>Selects best angles per tier<br/>Writes 3 personalised emails as JSON<br/>~\\$18 total for all 879 contacts"]:::ai --> I
 
     I["Write directly to HubSpot<br/>ft_upsell_email_body_1 / 2 / 3<br/>ft_upsell_email_subject_1 / 2 / 3<br/>ft_upsell_tier"]:::hubspot
 
     I --> J & K
 
-    J["⏳ Konrad's details<br/>Last name + Calendly link<br/>Add to pipeline config"]:::pending
-    K["⏳ Sequence shells<br/>Build 2 sequences in HubSpot UI<br/>Tier A/B (3 emails · Day 0/3/7)<br/>Tier C (2 emails · Day 0/5)"]:::pending
+    J["⏳ Konrad's last name<br/>Add to pipeline config (prompts.py)"]:::pending
+    K["⏳ Sequence shells<br/>Build 3 sequences in HubSpot UI<br/>Tier A / B / C — 3 emails · Day 0/3/7<br/>Booking CTA via {{owner.meetings_link}}"]:::pending
 
     J & K --> L
 
     L["Bulk Enrol<br/>Filter contacts by ft_upsell_tier<br/>in HubSpot contact list view"]:::step --> M
 
-    M(["📧 Sequences send from Konrad's inbox<br/>Calendly CTA in every email<br/>Auto-unenrol on reply or meeting booked"]):::send
+    M(["📧 Sequences send from Konrad's inbox<br/>HubSpot meetings link in every email<br/>Auto-unenrol on reply or meeting booked"]):::send
 
     classDef source fill:#FED7AA,stroke:#C2410C,color:#7C2D12
     classDef step fill:#DBEAFE,stroke:#1E40AF,color:#1E3A5F
@@ -239,26 +239,26 @@ export const projects: Project[] = [
     title: 'Free Tier Upsell: No Subscription + Funding Activity',
     shortTitle: 'Free Tier Upsell',
     description:
-      'Personalised upsell campaign targeting 875 free-tier Guusto accounts that are actively funding recognition. A Python pipeline analyses each account\'s usage data, segments contacts into three tiers based on funding activity and unclaimed gift balance, then generates unique personalised emails via Claude API and writes them directly to HubSpot — no manual import required. Two items remain before launch: Konrad\'s sender details (last name + Calendly link) and building the HubSpot sequence shells. Once done, the full run is three commands.',
+      'Personalised upsell campaign targeting 879 free-tier Guusto accounts that are actively funding recognition. A Python pipeline segments contacts into three tiers based on unclaimed gift balance and funding activity, then generates personalised 3-email sequences via Claude API and writes them directly to HubSpot. Two items remain before launch: Konrad\'s last name in the pipeline config and building the three HubSpot sequence shells. Once done, the full run is three commands.',
     status: 'in-progress',
     progress: 90,
     currentMilestone: 'Pipeline complete — waiting on Konrad\'s details + HubSpot sequence shells',
     lastUpdated: '2026-05-07',
     owner: 'Liam Shandro',
-    highlights: ['875 contacts', '3 sequence tiers', '~$18 API cost'],
+    highlights: ['879 contacts', '3 sequence tiers', '~$18 API cost'],
     tech: ['Metabase', 'Python', 'Claude API (Sonnet)', 'HubSpot', 'HubSpot Sequences'],
     diagram: DIAGRAM_FREE_TIER,
     actionItems: [
       { text: 'Pull Metabase SQL export (1,131 free-tier contacts)', done: true, owner: 'Liam' },
       { text: 'Analyse segment data — build 4-tier model by funding + unclaimed balance', done: true, owner: 'Liam' },
-      { text: 'Split CSV into tier files (A: 156 · B: 277 · C: 442 · D: 256 skipped)', done: true, owner: 'Liam' },
+      { text: 'Split CSV into tier files (A: 192 · B: 277 · C: 410 · D: 252 skipped)', done: true, owner: 'Liam' },
       { text: 'Create 7 HubSpot custom contact properties (ft_upsell_*)', done: true, owner: 'Liam' },
       { text: 'Build pipeline — HubSpot contact lookup + Claude API + direct property write', done: true, owner: 'Liam' },
       { text: 'Build email copy ruleset (anti-AI-tell rules, saved as reusable workspace skill)', done: true, owner: 'Liam' },
       { text: 'Read internal pricing sheet + Guusto.com/pricing — encode accurate feature gaps into prompts', done: true, owner: 'Liam' },
       { text: 'Test end-to-end — email generation + HubSpot write verified on live contact', done: true, owner: 'Liam' },
-      { text: 'Add Konrad\'s last name + Calendly link to pipeline config (prompts.py)', done: false, owner: 'Konrad' },
-      { text: 'Build 2 HubSpot sequence shells (Tier A/B — 3 emails · Tier C — 2 emails) from Konrad\'s inbox', done: false, owner: 'Liam + Konrad' },
+      { text: "Add Konrad's last name to pipeline config (prompts.py)", done: false, owner: 'Konrad' },
+      { text: 'Build 3 HubSpot sequence shells (Tier A/B/C — 3 emails · Day 0/3/7) from Konrad\'s inbox', done: false, owner: 'Liam + Konrad' },
       { text: 'Run full pipeline (python3 pipeline.py --tier a/b/c)', done: false, owner: 'Liam' },
       { text: 'Bulk enroll contacts by ft_upsell_tier in HubSpot contact list view', done: false, owner: 'Liam' },
     ],
