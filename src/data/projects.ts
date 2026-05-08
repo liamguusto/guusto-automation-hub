@@ -44,11 +44,11 @@ export type Project = {
 
 const DIAGRAM_AUTO_RENEWAL = `flowchart TD
     CRON["🕐 Railway Cron Job<br/>Runs on schedule (weekly)"]:::infra --> QUERY
-    QUERY["Query HubSpot<br/>Auto-renewal tier accounts<br/>next_renewal_date ≤ 30 days"]:::hubspot --> CHECK
+    QUERY["Query HubSpot<br/>subscription_tier = Lite<br/>next_renewal_date ≤ 30 days"]:::hubspot --> CHECK
     CHECK{Accounts due?}:::decision
     CHECK -->|None found| DONE["✓ No action needed"]:::done
     CHECK -->|Accounts found| FOR
-    FOR["For each account<br/>Look up Google Sheet<br/>Metabase usage data"]:::step --> DRAFT
+    FOR["For each account<br/>Fetch HubSpot company data<br/>(V1: generic messaging)"]:::step --> DRAFT
     DRAFT["Generate email draft<br/>Renewal notice + soft CTA<br/>Book call with Konrad"]:::ai --> WRITE
     WRITE["Write draft to HubSpot<br/>Konrad reviews → presses send"]:::hubspot --> INV
     INV["~10 days before renewal<br/>Post invoice request<br/>Slack #triage-invoice-request"]:::slack --> BOOKED
@@ -147,37 +147,27 @@ export const projects: Project[] = [
     title: 'Auto-renewal Upsell Sequence',
     shortTitle: 'Auto-renewal Upsell',
     description:
-      'Automated renewal notification cadence for Light plan (Tier 4) auto-renewal accounts. V1 eliminates Konrad manually tracking and reaching out to every account pre-renewal. Automation runs on Railway, queries HubSpot weekly, creates email drafts for Konrad to review, and triggers Slack invoice requests.',
+      'Automated renewal notification cadence for Lite plan (auto-renewal) accounts. V1 eliminates Konrad manually tracking and reaching out pre-renewal. Filter: subscription_tier = Lite + next_renewal_date set (34 accounts today). Runs on Railway, queries HubSpot weekly, creates email drafts for Konrad to review, and triggers Slack invoice requests at ~10 days. HubSpot ↔ Metabase matching via company domain — same approach as free-tier pipeline.',
     status: 'in-progress',
-    progress: 25,
-    currentMilestone: 'V1 spec doc + HubSpot↔Metabase account mapping (Camille/Cam)',
-    lastUpdated: '2026-05-06',
+    progress: 40,
+    currentMilestone: 'Spec ready for Automation Council (~May 20) — sequence copy + Konrad sync remaining',
+    lastUpdated: '2026-05-08',
     owner: 'Liam Shandro',
     highlights: ['Light plan accounts', '30-day trigger window', 'Konrad reviews drafts'],
     tech: ['HubSpot', 'Railway', 'Claude API', 'Python', 'Slack', 'Google Sheets'],
     diagram: DIAGRAM_AUTO_RENEWAL,
     roadblocks: [
       {
-        title: 'company_tier field not populated',
-        impact: 'Cannot filter on company_tier = "Lite Subscription" — zero companies tagged. Must use subscription_tier = "Lite" + next_renewal_date as workaround.',
-        owner: 'Camille / Mac — confirm when backfill is complete',
-        workaround: 'Filter on subscription_tier = "Lite" + next_renewal_date is set — works today.',
-      },
-      {
-        title: 'autorenews field is null for all accounts',
-        impact: 'Cannot filter on autorenews = true. No data indicates which accounts auto-renew vs. require a manual call.',
-        owner: 'Camille / Mac — needs data cleanup alongside company_tier backfill',
-      },
-      {
-        title: 'HubSpot → Metabase account matching not built',
-        impact: 'Metabase uses company ID only — no names. Cannot join Metabase enrichment data to HubSpot accounts without a manual mapping.',
-        owner: 'Liam + Camille + Cam',
+        title: 'company_tier field not yet backfilled (non-blocking)',
+        impact: 'company_tier = "Lite Subscription" exists in HubSpot but zero companies are tagged yet — backfill in progress.',
+        owner: 'Camille / Mac',
+        workaround: 'Filter on subscription_tier = "Lite" + next_renewal_date is set. Confirmed: all Lite accounts are auto-renewal. This is the V1 filter.',
       },
     ],
     actionItems: [
-      { text: 'Contact Camille + Cam — build Metabase company ID ↔ HubSpot account mapping', done: true, owner: 'Liam' },
+      { text: 'Confirm exact HubSpot "auto-renewal" tier label — Lite = auto-renewal confirmed (May 8)', done: true, owner: 'Liam' },
+      { text: 'HubSpot ↔ Metabase matching approach confirmed — domain-based (HubSpot company domain ↔ Metabase owner_email domain). No manual mapping needed.', done: true, owner: 'Liam' },
       { text: 'Get added to #triage-invoice-request; review invoice template format', done: true, owner: 'Liam' },
-      { text: 'Confirm exact HubSpot "auto-renewal" tier label with Camille or Mac', done: false, owner: 'Liam' },
       { text: 'Confirm with Cam how multi-workspace accounts appear in Metabase', done: false, owner: 'Liam' },
       { text: 'Audit Metabase — confirm available fields per company', done: false, owner: 'Liam' },
       { text: 'Research email sequence best practice (length + cadence)', done: false, owner: 'Liam' },
