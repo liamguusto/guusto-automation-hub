@@ -33,7 +33,7 @@ export function ProjectCard({ project }: { project: Project }) {
           {/* Header */}
           <div className="flex items-start justify-between gap-3">
             <h2 className="font-semibold text-warm-900 text-sm leading-snug group-hover:text-[#53C2BE] transition-colors">
-              {project.shortTitle}
+              {project.title}
             </h2>
             <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium ring-1 ring-inset flex-shrink-0 ${s.badge}`}>
               <span className={`w-1.5 h-1.5 rounded-full ${s.dot}`} />
