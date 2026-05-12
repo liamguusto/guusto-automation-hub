@@ -144,8 +144,8 @@ const DIAGRAM_INTEGRATION = `flowchart TD
 export const projects: Project[] = [
   {
     slug: 'auto-renewal-upsell',
-    title: 'Auto-renewal Upsell Sequence',
-    shortTitle: 'Auto-renewal Upsell',
+    title: 'SEQ · Lite Renewals → Upsell',
+    shortTitle: 'Lite Renewals',
     description:
       'Automated renewal notification cadence for Lite plan (auto-renewal) accounts. V1 eliminates Konrad manually tracking and reaching out pre-renewal. Filter: subscription_tier = Lite + next_renewal_date set (34 accounts today). Runs on Railway, queries HubSpot weekly, creates email drafts for Konrad to review, and triggers Slack invoice requests at ~10 days. HubSpot ↔ Metabase matching via company domain — same approach as free-tier pipeline.',
     status: 'in-progress',
@@ -226,8 +226,8 @@ export const projects: Project[] = [
 
   {
     slug: 'free-tier-upsell',
-    title: 'Free Tier Upsell: No Subscription + Funding Activity',
-    shortTitle: 'Free Tier Upsell',
+    title: 'SEQ · Free Tier → Paid Conversion',
+    shortTitle: 'Free Tier',
     description:
       'Personalised upsell campaign targeting 879 free-tier Guusto accounts that are actively funding recognition. A Python pipeline segments contacts into three tiers based on unclaimed gift balance and funding activity, then generates personalised 3-email sequences via Claude API and writes them directly to HubSpot. Two items remain before launch: Konrad\'s last name in the pipeline config and building the three HubSpot sequence shells. Once done, the full run is three commands.',
     status: 'in-progress',
@@ -291,7 +291,7 @@ export const projects: Project[] = [
 
   {
     slug: 'pre-demo-brief',
-    title: 'Are We A Fit → Pre-Demo Brief Automation',
+    title: 'AUTO · Pre-Demo Call → Brief',
     shortTitle: 'Pre-Demo Brief',
     description:
       'Automation that triggers when an "Are We A Fit?" call ends in Fathom. Pulls the transcript, scrapes the prospect\'s website with Firecrawl, and feeds both into Claude API to generate a branded pre-demo brief PDF + a conditional follow-up email draft. If a demo was booked on the call, sends a prep checklist. If not, enrolls the prospect in a follow-up sequence.',
@@ -349,8 +349,8 @@ export const projects: Project[] = [
 
   {
     slug: 'integration-partner-outbound',
-    title: 'Integration Partner Outbound — UKG Pro & Axonify Campaign',
-    shortTitle: 'Integration Partner Outbound',
+    title: 'CAMP · Integration Partners → UKG + Axonify',
+    shortTitle: 'Integration Partners',
     description:
       'Outbound campaign targeting companies already using Guusto\'s integration partners. Play 1: 97 Axonify companies (TheirStack) — deliberate, clean signal. Play 2: 880 UKG Pro companies with active recognition/rewards Bombora intent (Explorium). Messaging centres on the native integration: "Your managers can send recognition without leaving the tool they already use."',
     status: 'research-complete',
